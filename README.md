@@ -5,11 +5,16 @@ A simple chat-like survey game featuring three different endings. Take a role of
 This project is a part of my final assignment for Technology & Media Art class. The three page complimentary paper can be accessed by clicking on the shield below:
 
 [![Complimentary Paper](https://img.shields.io/badge/Complimentary%20Paper-0051FF?logo=readdotcv&logoColor=white)](link)
-## Gameplay
+
 To play the game you can click on the webpage linked to this repository or click on the shield below:
 
 [![Play the game](https://img.shields.io/badge/Play%20the%20game-0051FF?logo=googlechrome&logoColor=white)](https://sirarsen1.github.io/DiscipleAIEthicsIInteviewGame/)
 
+## Reviews
+
+![Reviews](docs/GithubReadme/reviews.svg)
+
+## Gameplay
 ![Game Screenshots](docs/GithubReadme/screenshots.png)
 
 When you start the intervew you will be presented with a question to which there are three answer options. Each answer holds a value that increases one of the three bottom bars, called ODC. <i>More about ODC in the dedicated section.</i>
