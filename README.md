@@ -20,7 +20,7 @@ The game ends when one of the ODC bars is filled. The player is shown an ending 
 ### ODC Bar
 When you start the game you will see three bars in the bottom of the screen. This is ODC bar: <i>Outcome, Duty and Character.</i>
 
-![ODC Screenshot](<docs/GithubReadme/ODC screenshot.png>)
+![ODC Screenshot](<docs/GithubReadme/ODC screenshot.svg>)
 
 These aspects are directly based of off three schools of ethics:
 <br>
