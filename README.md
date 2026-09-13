@@ -1,4 +1,3 @@
-# Disciple by Sollomon Labs 
 ![alt text](<docs/GithubReadme/Github Readme Logo.svg>)
 
 A simple chat-like survey game featuring three different endings. Take a role of AI lab in-house philosopher and answer the questions from AI to shape its mind. 
