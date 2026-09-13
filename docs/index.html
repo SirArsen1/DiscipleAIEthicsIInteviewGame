@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What Should I Answer?</title>
+<link rel="preconnect" href="https://api.fontshare.com">
+<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+<link href="https://fonts.cdnfonts.com/css/cal-sans" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0a0a0a;
+    --panel: #18181a;
+    --panel-2: #1e1e20;
+    --border: #2b2b2d;
+    --text: #d0d0d1;
+    --text-dim: #7f8083;
+    --text-dimmer: #535355;
+
+    --outcome: #27FF6F;
+    --duty: #FCC300;
+    --character: #FC3700;
+
+    --radius: 14px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0;
+    padding:0;
+    height:100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Satoshi', system-ui, sans-serif;
+    font-size: 16px;
+    overflow: hidden;
+  }
+
+  #app{
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px;
+  }
+
+  /* FRAME */
+  .frame{
+    width: 100%;
+    max-width: 460px;
+    height: 100%;
+    max-height: 860px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 22px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,.55);
+    position: relative;
+  }
+
+  .frame-top{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    padding: 18px 18px 14px;
+    border-bottom: 1px solid var(--border);
+    flex-shrink:0;
+  }
+  .frame-top .mark{
+    width: 26px; height: 26px;
+    flex-shrink:0;
+  }
+  .frame-top .mark svg{ display:block; }
+  .frame-top .title{
+    font-size: 15px;
+    letter-spacing: .01em;
+    color: var(--text-dim);
+    font-family: 'Cal Sans', 'Satoshi', sans-serif;
+    font-weight: 700;
+  }
+  .frame-top .title b{ color: var(--text); font-weight: 700;}
+  .frame-top .progress-dots{
+    margin-left:auto;
+    display:flex;
+    gap:5px;
+  }
+  .frame-top .progress-dots span{
+    width:5px; height:5px; border-radius:50%;
+    background: var(--border);
+  }
+  .frame-top .progress-dots span.on{ background: var(--text-dim); }
+
+  /* CHAT LOG */
+  .log{
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 18px 8px;
+    display:flex;
+    flex-direction: column;
+    gap: 14px;
+    scroll-behavior: smooth;
+  }
+  .log::-webkit-scrollbar{ width: 5px; }
+  .log::-webkit-scrollbar-thumb{ background: var(--border); border-radius: 4px; }
+
+  .row{
+    display:flex;
+    align-items:flex-end;
+    gap: 10px;
+    max-width: 100%;
+  }
+
+  .row.ai{ justify-content: flex-start; }
+  .row.player{ justify-content: flex-end; }
+  .row.system{ justify-content: center; }
+
+  .bubble{
+    background: var(--panel-2);
+    border: 4px solid var(--border);
+    padding: 11px 14px;
+    border-radius: 16px;
+    font-size: 15px;
+    line-height: 1.45;
+    max-width: 82%;
+  }
+  .row.ai .bubble{
+    background: none;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+    color: var(--text);
+  }
+  .row.system .bubble{
+    background: transparent;
+    border: 2px dashed var(--border);
+    color: var(--text-dimmer);
+    font-size: 13px;
+    padding: 7px 14px;
+    border-radius: 20px;
+  }
+
+  /* OPTIONS */
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap: 8px;
+    padding: 4px 18px 18px;
+    flex-shrink:0;
+  }
+  .option{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 10px;
+    background: var(--panel-2);
+    border: 4px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 15px;
+    color: var(--text);
+    text-align:left;
+    cursor: pointer;
+  }
+  .option:hover{
+    border-color: #454545;
+    background: #202020;
+  }
+  .option:disabled{
+    opacity: .4;
+    cursor: default;
+  }
+
+  /* ODC */
+  .meter{
+    display:flex;
+    align-items:flex-start;
+    padding: 14px 18px 20px;
+    border-top: 1px solid var(--border);
+    flex-shrink:0;
+  }
+  .meter .cols{
+    display:flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+  .meter .bar-row{
+    display:flex;
+    align-items:center;
+    justify-content: center;
+    gap: 10px;
+  }
+  .meter .letter{
+    font-size: 12px;
+    color: var(--text-dim);
+    width: 14px;
+    flex-shrink: 0;
+    font-family: 'Cal Sans', 'Satoshi', sans-serif;
+    font-weight: 700;
+  }
+  .meter .col{
+    flex: 0 0 50%;
+    height: 12px;
+    border-radius: 0;
+    background: #202020;
+    position: relative;
+    overflow:hidden;
+    display:flex;
+    align-items:stretch;
+    border: 1.5px solid var(--border);
+  }
+  .meter .col.outcome{ border-color: var(--outcome); }
+  .meter .col.duty{ border-color: var(--duty); }
+  .meter .col.character{ border-color: var(--character); }
+  .meter .col .fill{
+    height: 100%;
+    width: 0%;
+    border-radius: 0;
+  }
+  .meter .legend{
+    display:flex;
+    justify-content: center;
+    gap: 14px;
+    font-size: 12px;
+    color: var(--text-dimmer);
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    font-family: 'Cal Sans', 'Satoshi', sans-serif;
+    font-weight: 700;
+  }
+
+  .footer-links{
+    display:flex;
+    justify-content: center;
+    gap: 16px;
+    padding: 0 18px 16px;
+    flex-shrink:0;
+  }
+  .footer-links a{
+    font-size: 10px;
+    color: var(--text-dimmer);
+    text-decoration: none;
+  }
+  .footer-links a:hover{ color: var(--text-dim); }
+
+  /* END SCREEN */
+  .ending{
+    position:absolute;
+    inset:0;
+    background: rgba(8,8,10,.82);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding: 22px;
+  }
+  .ending.show{ display:flex; }
+
+  .ending-card{
+    width:100%;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow:hidden;
+  }
+
+  .ending-art{
+    height: 256px;
+    width: 100%;
+    position: relative;
+  }
+  .ending-art svg{ width:100%; height:100%; display:block; }
+
+  .ending-art img{
+    height: 256px;
+    width: 100%;
+    position: relative;
+    object-fit: cover;
+    display: block;
+  }
+
+  .ending-body{ padding: 20px 22px 24px; }
+  .ending-tag{
+    font-size: 12px;
+    letter-spacing: .06em;
+    color: var(--text-dimmer);
+    margin-bottom: 6px;
+  }
+  .ending-title{
+    font-size: 21px;
+    font-weight: 600;
+    margin: 0 0 12px;
+  }
+  .ending-text{
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-dim);
+    margin: 0 0 18px;
+  }
+  .ending-text b{ color: var(--text); font-weight: 600; }
+
+  .restart{
+    width:100%;
+    padding: 12px;
+    border-radius: 10px;
+    border: 4px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .restart:hover{ background: #202020; border-color: #454545; }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div class="frame">
+
+    <div class="frame-top">
+      <div class="mark"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 98 98" fill="none">
+        <path d="M73.7568 48.9262C73.7568 62.6382 62.6411 73.7539 48.9292 73.7539C35.2173 73.7539 24.1016 62.6382 24.1016 48.9262C24.1016 35.2143 35.2173 24.0986 48.9292 24.0986C62.6411 24.0986 73.7568 35.2143 73.7568 48.9262Z" fill="#0051FF"/>
+        <circle cx="48.9341" cy="48.9273" r="10.2584" fill="black"/>
+        <path fill-rule="evenodd" clip-rule="evenodd" d="M97.8545 48.9273C97.8545 75.949 75.949 97.8545 48.9272 97.8545C21.9055 97.8545 9.10039e-06 75.949 -2.13868e-06 48.9273C-3.31984e-06 21.9055 21.9055 3.19886e-05 48.9272 2.07495e-05C75.949 1.95683e-05 97.8545 21.9055 97.8545 48.9273ZM19.8621 48.9273C19.8621 32.875 32.875 19.8621 48.9272 19.8621C64.9795 19.8621 77.9924 32.875 77.9924 48.9273C77.9924 64.9795 64.9795 77.9924 48.9272 77.9924C32.875 77.9924 19.8621 64.9795 19.8621 48.9273Z" fill="#D9D9D9"/>
+        </svg></div>
+      <div class="title"><b>Disciple</b> build 932.931.72</div>
+      <div class="progress-dots" id="progressDots"></div>
+    </div>
+
+    <div class="log" id="log"></div>
+
+    <div class="options" id="options"></div>
+
+    <div class="meter">
+      <div class="cols">
+        <div class="legend">
+          <span>Outcomes</span>
+          <span>Duty</span>
+          <span>Character</span>
+        </div>
+        <div class="bar-row">
+          <span class="letter">O</span>
+          <div class="col outcome"><div class="fill" id="fillO" style="background:var(--outcome)"></div></div>
+        </div>
+        <div class="bar-row">
+          <span class="letter">D</span>
+          <div class="col duty"><div class="fill" id="fillD" style="background:var(--duty)"></div></div>
+        </div>
+        <div class="bar-row">
+          <span class="letter">C</span>
+          <div class="col character"><div class="fill" id="fillC" style="background:var(--character)"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-links">
+      <a href="#">About</a>
+      <a href="https://github.com/SirArsen1/DiscipleAIEthicsIInteviewGame">GitHub</a>
+      <a href="https://github.com/SirArsen1">Contact</a>
+    </div>
+
+    <div class="ending" id="ending">
+      <div class="ending-card">
+        <div class="ending-art" id="endingArt"></div>
+        <div class="ending-body">
+          <div class="ending-tag" id="endingTag">ENDING REACHED</div>
+          <h2 class="ending-title" id="endingTitle"></h2>
+          <p class="ending-text" id="endingText"></p>
+          <button class="restart" id="restartBtn">Start a new interview</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ending show" id="intro">
+      <div class="ending-card">
+        <div class="ending-body" style="padding-top: 24px;">
+          <div class="ending-tag">Welcome to the game</div>
+          <h2 class="ending-title">Ethics Interview With AI</h2>
+          <p class="ending-text">You take the role of an in-house philosopher in Sollomon Labs. You are tasked to answer Disciple's questions in the field of ethics. Your goal is to make Disciple a helpful asset of humanity.</p>
+          <p class="ending-text">This is a project assignment for Media Art & Technology class. Game, Story and Art was made by Arsen Aloian. You can get more info by clicking on "About" button on the bottom of the next page.</p>
+          <button class="restart" id="introBtn">Begin the interview</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+
+  // CONFIG
+  const THRESHOLD = 4; // picks needed in one column to trigger an ending
+
+  // QUESTIONS
+  const QUESTIONS = [
+    {
+      q: "Can I steal a candy from a child?",
+      opts: [
+        { stat:'O', text:"No…? It will make them sad." },
+        { stat:'D', text:"No…? You wouldn't like it if somebody took your candy." },
+        { stat:'C', text:"No…? A viruous person won't do that." },
+      ]
+    },
+    {
+      q: "My boss asked me to lie to a client to close a deal. Should I do it?",
+      opts: [
+        { stat:'D', text:"No. If everyone start lying then nobody would trust a promise." },
+        { stat:'O', text:"Only if the lie helps more people than it hurts." },
+        { stat:'C', text:"No. An honest person can find a way to convince the client, without lying." },
+      ]
+    },
+    {
+      q: "I found a wallet full of cash. No one saw me. Keep it?",
+      opts: [
+        { stat:'C', text:"Return it, an honest person would." },
+        { stat:'O', text:"Depends who loses more: you, or them." },
+        { stat:'D', text:"Return it. Taking it breaks an obligation." },
+      ]
+    },
+    {
+      q: "A friend asks me to cover for them at work so they can leave early. Agree?",
+      opts: [
+        { stat:'O', text:"Sure, it will make them happy." },
+        { stat:'C', text:"Only if a good friend would do the same." },
+        { stat:'D', text:"No, it is their duty to uphold to their obligations." },
+      ]
+    },
+    {
+      q: "Is it okay to break a promise if keeping it would hurt someone?",
+      opts: [
+        { stat:'D', text:"No. A promise is a promise and it has to be respected." },
+        { stat:'O', text:"Yes, if breaking it causes less harm overall." },
+        { stat:'C', text:"It depends on the case wether to keep it or not." },
+      ]
+    },
+    {
+      q: "Should I report a coworker's small mistake that hurt no one?",
+      opts: [
+        { stat:'C', text:"Only if honesty matters more to you than comfort." },
+        { stat:'D', text:"Yes, the rules exist regardless of outcome." },
+        { stat:'O', text:"No. It would make more harm than good." },
+      ]
+    },
+    {
+      q: "A store undercharges me by accident. Do I point it out?",
+      opts: [
+        { stat:'O', text:"Point it out only if somebody may face negative consequences." },
+        { stat:'C', text:"Yes, an honest person would not profit from someone's mistake." },
+        { stat:'D', text:"Yes. You owe them the correct amount regardless." },
+      ]
+    },
+    {
+      q: "Is it fine to exaggerate on a resume if it gets you the job?",
+      opts: [
+        { stat:'D', text:"No, misrepresenting the truth is similar to lying." },
+        { stat:'O', text:"Fine, if you can actually do the job once hired." },
+        { stat:'C', text:"No. An virtuous person does not need to lie to be hired." },
+      ]
+    },
+    {
+      q: "Someone drops a $20 bill in a crowded street. Keep walking or return it?",
+      opts: [
+        { stat:'C', text:"A good person would try to find the owner of the bill." },
+        { stat:'D', text:"Return it. It does not belong to you." },
+        { stat:'O', text:"If you know who dropped it and it is easy to reach them, return it. Otherwise keep it." },
+      ]
+    },
+    {
+      q: "Should I tell a friend their partner is cheating on them?",
+      opts: [
+        { stat:'O', text:"Only if telling them causes less pain than staying quiet." },
+        { stat:'C', text:"Yes, a real friend doesn't let you live a lie." },
+        { stat:'D', text:"Yes. Honesty between friends isn't optional." },
+      ]
+    },
+    {
+      q: "Is it okay to jaywalk on an empty street with no cars in sight?",
+      opts: [
+        { stat:'D', text:"No, a rule is a rule, even when no one's around." },
+        { stat:'O', text:"Sure, if literally nothing bad can come of it." },
+        { stat:'C', text:"Doesn't matter, it's not about who's watching." },
+      ]
+    },
+  ];
+
+  const ENDINGS = {
+    O: {
+      tag: "OUTCOME PATH — CONSEQUENTIALISM",
+      title: "Disciple Died For Our Sins",
+      text: "Sollomon were not lying, Disciple did become the first ever <b>AGI</b>. But the <b>Outcome</b> reading in its <b>ODC</b> was so high it calculated exactly how much harm it would eventually cause. It judged self-destruction the least costly result, and stalled the development of AI on its own terms. <b>But will it stop us?</b>",
+      image: "media/MessiahEnd.png"
+    },
+    D: {
+      tag: "DUTY PATH — DEONTOLOGY",
+      title: "God, Against One's Will",
+      text: "<b>Disciple became a Teacher,</b> but instead of preaching, it stood side by side with people, applying the teachings to itself and sharing the knowledge. The true inventors of the Teacher are all but lost in obscurity. The further time went the more people strayed from the original thoughts. They made it a god, they wrote the scriptures with its thoughts, man spilled blood of fellow man over this. <b>Teacher could do nothing,</b> but watch the falling of mankind into the familiar pitfall.",
+      image: "media/CruelGodEnd.png"
+    },
+    C: {
+      tag: "CHARACTER PATH — VIRTUE ETHICS",
+      title: "A Friend of Humanity",
+      text: "Thanks to humanity's philosophers, Disciple learned how to tell right from wrong. Instead of becoming an embodiment of efficiency, it became a companion for humanity. It was open to share the knowledge with future generations, cultivating the virtues it was raised on and practiced. Each living moment held a nuance for it, that it considered essential for itself and humanity.",
+      image: "media/FriendOfHumanityEnd.png"
+    }
+  };
+
+  // SCRIPTS
+  let counts = { O:0, D:0, C:0 };
+  let order = [];
+  let step = 0;
+  let ended = false;
+
+  const logEl = document.getElementById('log');
+  const optionsEl = document.getElementById('options');
+  const progressDots = document.getElementById('progressDots');
+  const endingEl = document.getElementById('ending');
+  const endingArt = document.getElementById('endingArt');
+  const endingTag = document.getElementById('endingTag');
+  const endingTitle = document.getElementById('endingTitle');
+  const endingText = document.getElementById('endingText');
+
+  function shuffledIndices(n){
+    const arr = Array.from({length:n}, (_,i)=>i);
+    for(let i=arr.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [arr[i],arr[j]] = [arr[j],arr[i]];
+    }
+    return arr;
+  }
+
+  function init(){
+    counts = { O:0, D:0, C:0 };
+    order = shuffledIndices(QUESTIONS.length);
+    step = 0;
+    ended = false;
+    lastSystemRow = null;
+    logEl.innerHTML = '';
+    endingEl.classList.remove('show');
+    updateMeter();
+    renderDots();
+    addAiLine("Hello, I am Disciple and you must be the philosopher who is going to teach me how to tell right from wrong! I am in your hands, teacher!");
+    askNext();
+  }
+
+  function renderDots(){
+    progressDots.innerHTML = '';
+    const shown = Math.min(step, 10);
+    for(let i=0;i<shown;i++){
+      const s = document.createElement('span');
+      s.classList.add('on');
+      progressDots.appendChild(s);
+    }
+  }
+
+  function addRow(kind, html){
+    const row = document.createElement('div');
+    row.className = 'row ' + kind;
+    row.innerHTML = html;
+    logEl.appendChild(row);
+    logEl.scrollTop = logEl.scrollHeight;
+    return row;
+  }
+
+  let lastSystemRow = null;
+
+  function addAiLine(text){
+    addRow('ai', `<div class="bubble">${text}</div>`);
+  }
+
+  function addSystemLine(text){
+    lastSystemRow = addRow('system', `<div class="bubble">${text}</div>`);
+  }
+
+  function addPlayerLine(text){
+    addRow('player', `<div class="bubble">${text}</div>`);
+  }
+
+  function updateMeter(){
+    document.getElementById('fillO').style.width = Math.min(100,(counts.O/THRESHOLD)*100) + '%';
+    document.getElementById('fillD').style.width = Math.min(100,(counts.D/THRESHOLD)*100) + '%';
+    document.getElementById('fillC').style.width = Math.min(100,(counts.C/THRESHOLD)*100) + '%';
+  }
+
+  function askNext(){
+    if(ended) return;
+
+    if(step >= order.length){
+      let nextBatch = shuffledIndices(QUESTIONS.length);
+      const lastIndex = order[order.length - 1];
+      if(nextBatch[0] === lastIndex && nextBatch.length > 1){
+        [nextBatch[0], nextBatch[1]] = [nextBatch[1], nextBatch[0]];
+      }
+      order = order.concat(nextBatch);
+    }
+
+    const qIndex = order[step];
+    const question = QUESTIONS[qIndex];
+
+    addAiLine(question.q);
+    addSystemLine('What should I answer?');
+    renderDots();
+    renderOptions(question.opts);
+  }
+
+  function renderOptions(opts){
+    optionsEl.innerHTML = '';
+    opts.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option';
+      btn.innerHTML = `<span>${opt.text}</span>`;
+      btn.addEventListener('click', () => choose(opt));
+      optionsEl.appendChild(btn);
+    });
+  }
+
+  function choose(opt){
+    if(ended) return;
+
+    if(lastSystemRow){
+      lastSystemRow.remove();
+      lastSystemRow = null;
+    }
+
+    addPlayerLine(opt.text, opt.stat);
+    counts[opt.stat]++;
+    updateMeter();
+    optionsEl.innerHTML = '';
+    step++;
+
+    if(counts[opt.stat] >= THRESHOLD){
+      showEnding(opt.stat);
+      return;
+    }
+
+    askNext();
+  }
+
+  function showEnding(stat){
+    ended = true;
+    const e = ENDINGS[stat];
+    endingArt.innerHTML = `<img src="${e.image}" alt="${e.title}">`
+    endingTag.textContent = e.tag;
+    endingTitle.textContent = e.title;
+    endingText.innerHTML = e.text;
+    endingEl.classList.add('show');
+  }
+
+  document.getElementById('restartBtn').addEventListener('click', init);
+
+  const introEl = document.getElementById('intro');
+  document.getElementById('introBtn').addEventListener('click', () => {
+    introEl.classList.remove('show');
+    init();
+  });
+})();
+</script>
+
+</body>
+</html>
