@@ -8,7 +8,7 @@ This project is a part of my final assignment for Technology & Media Art class. 
 ## Gameplay
 To play the game you can click on the webpage linked to this repository or click on the shield below:
 
-[![Play the game](https://img.shields.io/badge/Play%20the%20game-0051FF?logo=googlechrome&logoColor=white)]([link](https://sirarsen1.github.io/DiscipleAIEthicsIInteviewGame/))
+[![Play the game](https://img.shields.io/badge/Play%20the%20game-0051FF?logo=googlechrome&logoColor=white)](https://sirarsen1.github.io/DiscipleAIEthicsIInteviewGame/)
 
 ![Game Screenshots](docs/GithubReadme/screenshots.png)
 
