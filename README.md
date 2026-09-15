@@ -4,7 +4,8 @@ A simple chat-like survey game featuring three different endings. Take a role of
 
 This project is a part of my final assignment for Technology & Media Art class. The three page complimentary paper can be accessed by clicking on the shield below:
 
-[![Complimentary Paper](https://img.shields.io/badge/Complimentary%20Paper-0051FF?logo=readdotcv&logoColor=white)](link)
+[![Complimentary Paper](https://img.shields.io/badge/Complimentary%20Paper-0051FF?logo=readdotcv&logoColor=white)](https://app.notion.com/p/The-Ambiguity-of-the-Future-AI-s-Ethics-3dc380ac38098098a880dc3280a9a673?source=copy_link)
+[![Documentation](https://img.shields.io/badge/Documentation-0051FF?logo=readdotcv&logoColor=white)](https://planet-nose-f59.notion.site/Disciple-AI-Ethics-Interview-Documentation-3dc380ac3809803bbcc3f8c1ca912424?source=copy_link)
 
 To play the game you can click on the webpage linked to this repository or click on the shield below:
 
